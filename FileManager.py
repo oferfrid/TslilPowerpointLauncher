@@ -13,7 +13,7 @@ def get_sorted_files(files_path):
     return sorted_file_names, sorted_files_path
 
 def main():
-    fp = get_files_path('/home/oferfrid/Documents/Ofer/3d/temp')
+    fp = get_files_path(r'C:\Users\oferfrid\Downloads\ppt')
     sorted_file_names, sorted_files_path = get_sorted_files(fp)
 
 
