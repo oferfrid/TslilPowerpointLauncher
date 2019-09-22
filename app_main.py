@@ -53,7 +53,8 @@ class Window(tk.Tk):
             self.debug_selected_song_label['text'] = self.songs_files_list[self.songs_list_box.curselection()[0]]
         elif e.keysym=='Up' or e.keysym=='Down':
             self.current_search_str = []
-            self.update_search_selection()
+            # self.update_search_selection()
+
         elif (e.char!=''):
             # is char
             if (1488<=ord(e.char)) & (ord(e.char)<=1514):
@@ -65,18 +66,26 @@ class Window(tk.Tk):
                 self.current_search_str += [e.char]
                 self.update_search_selection()
 
+    def update_selection(self,index):
+        self.songs_list_box.selection_clear(0, tk.END)
+        self.songs_list_box.select_set(index)
+        self.songs_list_box.activate(index)
+        self.songs_list_box.focus_set()
+        self.songs_list_box.see(index)
+
     def update_search_selection(self):
         search_str = ''.join(self.current_search_str)
         self.debug_search_label['text'] = search_str
         if len(search_str)>0:
             found_indexes = [i for i,t in enumerate(self.songs_name_list) if t.startswith(search_str)]
             if len(found_indexes)>0:
-                # self.songs_list_box.selection_clear()
-                self.songs_list_box.select_set(found_indexes[0])
-                self.songs_list_box.see(found_indexes[0])
+                self.update_selection(found_indexes[0])
 
     def keyup(self,e):
         print('up', e.char)
+        if e.keysym == 'Up' or e.keysym == 'Down':
+            self.update_selection(self.songs_name_list.index(self.songs_list_box.get(tk.ACTIVE)))
+
 
 
 
