@@ -2,26 +2,29 @@ import os
 import sys
 import tkinter as tk
 from FileManager import get_files_path, get_sorted_files
+from datetime import datetime
 
 class Window(tk.Tk):
     songs_files_list = None
     songs_name_list = None
     songs_list_box = None
-    debug_selected_song_label = None
-    debug_search_label = None
+    last_selection_time = datetime.now()
+    current_search_str = []
+    # debug_selected_song_label = None
+    # debug_search_label = None
 
     def __init__(self):
         tk.Tk.__init__(self)
-        self.title("Tzlil ppt launcher")
-        self.minsize(600,400)
-        # self.wm_iconbitmap('icon.ico')
+        self.title("Tslil ppt launcher")
+        self.minsize(200,300)
+        self.wm_iconbitmap('tslil.ico')
         self.init_songs()
         self.init_songsListbox()
         # self.init_debug_title()
-        self.current_search_str = []
 
     def init_songs(self):
         fp = get_files_path(os.path.dirname(os.path.realpath(__file__)), extantions=['ppt', 'pptx'])
+        # fp = get_files_path(r'C:\Users\oferfrid\Downloads\ppt', extantions=['ppt', 'pptx'])
         sorted_file_names, sorted_files_path = get_sorted_files(fp)
         self.songs_files_list = sorted_files_path
         self.songs_name_list = sorted_file_names
@@ -51,21 +54,32 @@ class Window(tk.Tk):
         if e.keysym == 'Return':
             ppt_file_path = self.songs_files_list[self.songs_list_box.curselection()[0]]
             # self.debug_selected_song_label['text'] = ppt_file_path
+            self.current_search_str = []
+            self.last_selection_time = datetime.now()
             os.startfile(ppt_file_path,'show')
         elif e.keysym=='Up' or e.keysym=='Down':
             self.current_search_str = []
+            self.last_selection_time = datetime.now()
             # self.update_search_selection()
-
+        elif e.keysym=='BackSpace':
+            self.current_search_str = []
+            self.last_selection_time = datetime.now()
         elif (e.char!=''):
             # is char
-            if (1488<=ord(e.char)) & (ord(e.char)<=1514):
+            if ((1488<=ord(e.char)) & (ord(e.char)<=1514)) or e.char==' ':
                 # hebrew char
-                self.current_search_str += [e.char]
+                if (datetime.now()-self.last_selection_time).seconds>2:
+                    self.last_selection_time = datetime.now()
+                    self.current_search_str = [e.char]
+                else:
+                    self.current_search_str += [e.char]
+                    self.last_selection_time = datetime.now()
                 self.update_search_selection()
-            elif e.char==' ':
-                # space char
-                self.current_search_str += [e.char]
-                self.update_search_selection()
+            # elif e.char==' ':
+            #     # space char
+            #     self.current_search_str += [e.char]
+            #     self.last_selection_time = datetime.now()
+            #     self.update_search_selection()
 
     def update_selection(self,index):
         self.songs_list_box.selection_clear(0, tk.END)
